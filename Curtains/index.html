@@ -58,11 +58,89 @@
       </div>
     </div>
   </body>
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"
-    integrity="sha512-NcZdtrT77bJr4STcmsGAESr06BYGE8woZdSdEgqnpyqac7sugNO+Tr4bGwGF3MsnEkGKhU2KL2xh6Ec+BqsaHA=="
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  ></script>
-  <script src="main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/CustomEase.min.js"></script>
+  <script>
+    gsap.registerPlugin(CustomEase);
+    CustomEase.create("hop", "0.9, 0, 0.1, 1");
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const tl = gsap.timeline({
+        delay: 0.3,
+        defaults: {
+          ease: "hop",
+        },
+      });
+      const counts = document.querySelectorAll(".count");
+      counts.forEach((count, index) => {
+        const digits = count.querySelectorAll(".digit h1");
+        tl.to(
+          digits,
+          {
+            y: "0%",
+            duration: 1,
+            stagger: 0.075,
+          },
+          index * 1
+        );
+
+        if (index < counts.length) {
+          tl.to(
+            digits,
+            {
+              y: "-110%",
+              duration: 1,
+              stagger: 0.075,
+            },
+            index * 1 + 1
+          );
+        }
+      });
+
+      tl.to(".spinner", {
+        opacity: 0,
+        duration: 0.3,
+      });
+
+      tl.to(
+        ".word h1",
+        {
+          y: "0%",
+          duration: 1,
+        },
+        "<"
+      );
+
+      tl.to(".divider", {
+        scaleY: "100%",
+        duration: 1,
+        onComplete: () =>
+          gsap.to(".divider", { opacity: 0, duration: 0.4, delay: 0.3 }),
+      });
+
+      tl.to("#word1 h1", {
+        y: "200%",
+        duration: 1,
+        delay: 0.3,
+      });
+
+      tl.to(
+        "#word2 h1",
+        {
+          y: "-200%",
+          duration: 1,
+        },
+        "<"
+      );
+
+      tl.to(".block", {
+        clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+        duration: 1,
+        stagger: 0.1,
+        onStart: () => {
+          gsap.to(".hero", { scale: 1, duration: 2, ease: "hop" });
+        },
+      });
+    });
+  </script>
 </html>
