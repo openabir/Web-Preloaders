@@ -69,7 +69,7 @@ Please read CONTRIBUTING.md for details on our code of conduct, and the process 
 [openabir](https://github.com/openabir)
 
 ## License
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+This project is licensed under the MIT License - see the ```LICENSE.md``` file for details.
 
 ### Acknowledgments
 - Inspired by - [P10](https://p10.mubien.com)
