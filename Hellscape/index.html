@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Animated Preloader</title>
+  </head>
+  <body>
+    <div class="preloader">
+      <div class="intro-title">
+        <h1>Hellscape Studio</h1>
+      </div>
+      <div class="outro-title">
+        <h1>1O</h1>
+      </div>
+    </div>
+
+    <div class="split-overlay">
+      <div class="intro-title">
+        <h1>Hellscape Studio</h1>
+      </div>
+      <div class="outro-title">
+        <h1>1O</h1>
+      </div>
+    </div>
+
+    <div class="tags">
+      <div class="tag t1"><p>Distortion</p></div>
+      <div class="tag t2"><p>Negativity</p></div>
+      <div class="tag t3"><p>Void Form</p></div>
+    </div>
+
+    <div class="container">
+      <nav>
+        <p id="logo">H1O</p>
+        <p>Menu</p>
+      </nav>
+      <div class="hero"><img src="./void.jpg" alt="Abstract art" /></div>
+      <div class="card">
+        <h1>Nullscape</h1>
+      </div>
+      <footer>
+        <p>Made by <a href="https://github.com/openabir">openabir</a> ❤️</p>
+      </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/CustomEase.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+
+    <script>
+      // The entire script is wrapped in a DOMContentLoaded event listener.
+      // This ensures that the script only runs after the entire HTML document
+      // has been loaded and parsed by the browser.
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- 1. GSAP PLUGIN REGISTRATION & SETUP ---
+
+        // Register the GSAP plugins that we'll be using.
+        gsap.registerPlugin(CustomEase, SplitText);
+
+        // Create a custom easing curve for a unique animation feel.
+        // This gives animations a specific "bounce" or "hop" effect.
+        CustomEase.create("hop", ".8, 0, .3, 1");
+
+        // --- 2. HELPER FUNCTION TO SPLIT TEXT ---
+
+        /**
+         * A reusable function to split text content into characters and/or words.
+         * This is necessary for animating individual letters or words.
+         * @param {string} selector - The CSS selector for the elements to split.
+         * @param {string} type - The type of split (e.g., "words,chars").
+         * @param {boolean} addFirstChar - Whether to add a special class to the first character.
+         */
+        const splitTextElements = (
+          selector,
+          type = "words,chars",
+          addFirstChar = false
+        ) => {
+          const elements = document.querySelectorAll(selector);
+          elements.forEach((element) => {
+            // Use GSAP's SplitText plugin to perform the split.
+            const mySplit = new SplitText(element, {
+              type,
+              wordsClass: "word",
+              charsClass: "char",
+            });
+
+            // If we split by characters, wrap each character in an additional <span>.
+            // This is a common technique for character reveal animations.
+            if (type.includes("chars")) {
+              mySplit.chars.forEach((char, index) => {
+                const originalText = char.textContent;
+                char.innerHTML = `<span>${originalText}</span>`;
+
+                // If specified, add a "first-char" class to the first character
+                // for special styling or animation targeting.
+                if (addFirstChar && index === 0) {
+                  char.classList.add("first-char");
+                }
+              });
+            }
+          });
+        };
+
+        // --- 3. APPLY TEXT SPLITTING TO ALL RELEVANT ELEMENTS ---
+
+        // Split the text that will be animated throughout the preloader and main page.
+        splitTextElements(".intro-title h1", "words, chars", true);
+        splitTextElements(".outro-title h1");
+        splitTextElements(".tag p", "words");
+        splitTextElements(".card h1", "words, chars", true);
+
+        // --- 4. SET INITIAL STYLES ---
+
+        // Use gsap.set() to define the starting state of elements before any animation begins.
+        // This prevents any flicker of unstyled content.
+
+        // For the split-overlay, ensure the inner spans are not transformed initially.
+        gsap.set(
+          [
+            ".split-overlay .intro-title .first-char span",
+            ".split-overlay .outro-title .char span",
+          ],
+          { y: "0%" }
+        );
+
+        // Set the starting position and style for the "H" in the overlay.
+        gsap.set(".split-overlay .intro-title .first-char", {
+          x: "18rem",
+          y: "-2.75rem",
+          fontWeight: "900",
+          scale: 0.75,
+        });
+
+        // Set the starting position and style for the "1O" in the overlay.
+        gsap.set(".split-overlay .outro-title .char", {
+          x: "-8rem",
+          fontSize: "14rem",
+          fontWeight: "500",
+        });
+
+        // --- 5. CREATE THE MAIN ANIMATION TIMELINE ---
+
+        // A GSAP timeline allows us to sequence multiple animations with precise timing.
+        const tl = gsap.timeline({
+          defaults: {
+            // Set our custom "hop" ease as the default for all animations in this timeline.
+            ease: "hop",
+          },
+        });
+
+        // --- 6. BUILD THE ANIMATION SEQUENCE ---
+
+        // -- TAGS INTRO --
+        // Animate the three tags sliding up into view.
+        const tags = gsap.utils.toArray(".tag");
+        tags.forEach((tag, index) => {
+          tl.to(
+            tag.querySelectorAll("p .word"),
+            {
+              y: "0%", // Animate from a pre-styled y: 100% to 0%
+              duration: 0.75,
+            },
+            0.5 + index * 0.1 // Stagger the start time of each tag animation.
+          );
+        });
+
+        // -- MAIN PRELOADER SEQUENCE --
+        tl
+          // 1. Reveal "Hellscape Studio" text character by character.
+          .to(
+            ".preloader .intro-title .char span",
+            {
+              y: "0%",
+              duration: 0.75,
+              stagger: 0.05,
+            },
+            0.5 // Start at 0.5 seconds into the timeline.
+          )
+          // 2. Hide all characters of "Hellscape Studio" except the first one ("H").
+          .to(
+            ".preloader .intro-title .char:not(.first-char) span",
+            {
+              y: "100%", // Slide them down out of view.
+              duration: 0.75,
+              stagger: 0.05,
+            },
+            2 // Start at 2 seconds.
+          )
+          // 3. Reveal the "1O" text.
+          .to(
+            ".preloader .outro-title .char span",
+            {
+              y: "0%",
+              duration: 0.75,
+              stagger: 0.075,
+            },
+            2.5 // Start at 2.5 seconds.
+          )
+          // 4. Move the "H" and "1O" towards each other to form the "H1O" logo.
+          .to(
+            ".preloader .intro-title .first-char",
+            {
+              x: "24rem",
+              duration: 1,
+            },
+            3.5 // Start at 3.5 seconds.
+          )
+          .to(
+            ".preloader .outro-title .char",
+            {
+              x: "-7rem",
+              duration: 1,
+            },
+            3.5 // Start at the same time for a simultaneous move.
+          )
+          // 5. Finalize the logo's position, size, and style.
+          .to(
+            ".preloader .intro-title .first-char",
+            {
+              x: "23.5rem",
+              y: "-0.9rem",
+              fontWeight: "900",
+              scale: 0.75,
+              duration: 0.75,
+            },
+            4.5 // Start at 4.5 seconds.
+          )
+          // 6. Finalize the "1O" and execute the split screen effect on completion.
+          .to(
+            ".preloader .outro-title .char",
+            {
+              x: "-7rem",
+              fontSize: "9rem",
+              fontWeight: "500",
+              duration: 0.75,
+              // The onComplete callback runs at the exact moment this animation finishes.
+              onComplete: () => {
+                // A. Sync the state: Instantly set the properties of the hidden
+                //    `.split-overlay` to perfectly match the final state of the
+                //    visible `.preloader` elements. This is crucial for a seamless split.
+                gsap.set(".split-overlay .intro-title .first-char", {
+                  x: "23.5rem",
+                  y: "-0.9rem",
+                });
+                gsap.set(".split-overlay .outro-title .char", {
+                  fontSize: "9rem",
+                  x: "-7rem",
+                });
+
+                // B. Apply clip-paths: Reveal the top half of the preloader
+                //    and the bottom half of the overlay to create the split effect.
+                gsap.set(".preloader", {
+                  clipPath: "polygon(0% 0%, 100% 0%, 100% 50%, 0% 50%)",
+                });
+                gsap.set(".split-overlay", {
+                  clipPath: "polygon(0 50%, 100% 50%, 100% 100%, 0 100%)",
+                });
+              },
+            },
+            4.5 // Start at the same time as the "H" finalization.
+          )
+          // 7. Begin revealing the main content container as a thin horizontal line.
+          .to(
+            ".container",
+            {
+              clipPath: "polygon(0 49%, 100% 49%, 100% 51%, 0 51%)",
+              duration: 1,
+            },
+            5 // Start at 5 seconds.
+          );
+
+        // -- TAGS OUTRO --
+        // Animate the three tags sliding down out of view.
+        tags.forEach((tag, index) => {
+          tl.to(
+            tag.querySelectorAll("p .word"),
+            {
+              y: "100%",
+              duration: 0.75,
+            },
+            5.5 + index * 0.1 // Stagger the start time.
+          );
+        });
+
+        // -- FINAL PAGE TRANSITION --
+        tl
+          // 1. Move the two halves of the preloader off the screen.
+          .to(
+            [".preloader", ".split-overlay"],
+            {
+              // Use a function to move the first element up and the second element down.
+              y: (i) => (i === 0 ? "-50%" : "50%"),
+              duration: 1,
+            },
+            6 // Start at 6 seconds.
+          )
+          // 2. Fully reveal the main page content.
+          .to(
+            ".container",
+            {
+              clipPath: "polygon(0 0%, 100% 0%, 100% 100%, 0 100%)",
+              duration: 1,
+            },
+            6 // Start at the same time the preloader halves move away.
+          )
+          // 3. Animate the card element into view.
+          .to(
+            ".container .card",
+            {
+              clipPath: "polygon(0 0%, 100% 0%, 100% 100%, 0 100%)",
+              duration: 0.75,
+            },
+            6.25
+          )
+          // 4. Reveal the text inside the card.
+          .to(
+            ".container .card h1 .char span",
+            {
+              y: "0%",
+              duration: 0.75,
+              stagger: 0.05,
+            },
+            6.5
+          );
+      });
+    </script>
+  </body>
+</html>
