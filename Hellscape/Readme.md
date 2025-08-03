@@ -1,7 +1,7 @@
 # Hellscape - Animated Preloader
 Inspired by awwwards wining website [P10](https://p10.mubien.com), this project is a creative, multi-stage preloader animation for a webpage. Built using the GreenSock Animation Platform [GSAP](), it orchestrates a complex sequence of text transformations culminating in a split-screen effect that unveils the main content. Designed specifically for desktop environments, the animation delivers a visually engaging and memorable introduction.
 
-> Note: This is a Desktop friendly animation and no support for mobile is implemented and will be included in later
+> Note: This animation is optimized for desktop environments only. Mobile support is not currently implemented and will be introduced in a future update.
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
@@ -66,7 +66,7 @@ The HTML and JavaScript files are thoroughly commented to provide a clear unders
 Please read CONTRIBUTING.md for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Authors
-openabir
+[openabir](https://github.com/openabir)
 
 ## License
 This project is licensed under the MIT License - see the LICENSE.md file for details.
