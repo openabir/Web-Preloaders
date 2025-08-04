@@ -65,82 +65,60 @@
     CustomEase.create("hop", "0.9, 0, 0.1, 1");
 
     document.addEventListener("DOMContentLoaded", () => {
+      // --- Performance: Cache all DOM element selectors at the start ---
+      const counts = document.querySelectorAll(".count");
+      const spinner = ".spinner";
+      const words = ".word h1";
+      const word1 = "#word1 h1";
+      const word2 = "#word2 h1";
+      const divider = ".divider";
+      const blocks = ".block";
+      const hero = ".hero";
+
+      // --- Readability: Create a master timeline for all animations ---
       const tl = gsap.timeline({
         delay: 0.3,
         defaults: {
           ease: "hop",
+          duration: 1, // Set a default duration for cleaner tweens
         },
       });
-      const counts = document.querySelectorAll(".count");
+
+      // --- Refined Logic: Animate the counter ---
+      // The loop now directly adds tweens to the timeline at specific time marks.
+      // The redundant `if` condition has been removed.
       counts.forEach((count, index) => {
         const digits = count.querySelectorAll(".digit h1");
-        tl.to(
-          digits,
-          {
-            y: "0%",
-            duration: 1,
-            stagger: 0.075,
-          },
-          index * 1
-        );
+        const startTime = index * 1; // Calculate start time for clarity
 
-        if (index < counts.length) {
-          tl.to(
-            digits,
-            {
-              y: "-110%",
-              duration: 1,
-              stagger: 0.075,
-            },
-            index * 1 + 1
-          );
-        }
+        // Animate digits into view
+        tl.to(digits, { y: "0%", stagger: 0.075 }, startTime);
+        // Animate digits out of view
+        tl.to(digits, { y: "-110%", stagger: 0.075 }, startTime + 1);
       });
 
-      tl.to(".spinner", {
-        opacity: 0,
-        duration: 0.3,
-      });
+      // --- Chaining & Readability: Sequence the rest of the animations ---
+      // Instead of using onComplete/onStart callbacks, we chain animations
+      // directly on the timeline for better control and clarity.
+      tl
+        // Hide spinner and show words simultaneously
+        .to(spinner, { opacity: 0, duration: 0.3 })
+        .to(words, { y: "0%" }, "<") // '<' starts this tween with the previous one
 
-      tl.to(
-        ".word h1",
-        {
-          y: "0%",
-          duration: 1,
-        },
-        "<"
-      );
+        // Animate the divider line and its fade out
+        .to(divider, { scaleY: "100%" })
+        .to(divider, { opacity: 0, duration: 0.4, delay: 0.3 }) // Formerly an onComplete callback
 
-      tl.to(".divider", {
-        scaleY: "100%",
-        duration: 1,
-        onComplete: () =>
-          gsap.to(".divider", { opacity: 0, duration: 0.4, delay: 0.3 }),
-      });
+        // Animate the words splitting apart
+        .to(word1, { y: "200%", delay: 0.3 })
+        .to(word2, { y: "-200%" }, "<")
 
-      tl.to("#word1 h1", {
-        y: "200%",
-        duration: 1,
-        delay: 0.3,
-      });
-
-      tl.to(
-        "#word2 h1",
-        {
-          y: "-200%",
-          duration: 1,
-        },
-        "<"
-      );
-
-      tl.to(".block", {
-        clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
-        duration: 1,
-        stagger: 0.1,
-        onStart: () => {
-          gsap.to(".hero", { scale: 1, duration: 2, ease: "hop" });
-        },
-      });
+        // Animate the curtain reveal and scale the hero image
+        .to(blocks, {
+          clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+          stagger: 0.1,
+        })
+        .to(hero, { scale: 1, duration: 2, ease: "hop" }, "<"); // Formerly an onStart callback
     });
   </script>
 </html>
