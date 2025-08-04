@@ -1,5 +1,6 @@
 # GSAP Curtain Reveal Animation 🎬
 A smooth and performant splash screen animation that simulates a flipping counter and a "curtain opening" effect to reveal the main content. This project is built with HTML, CSS, and the GreenSock Animation Platform (GSAP).
+> Note: This animation is optimized for desktop environments only. Mobile support is not currently implemented and will be introduced in a future update.
 
 ## Features
 ### Flipping Counter: 
