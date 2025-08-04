@@ -41,10 +41,10 @@ Navigate to the project directory.
 ```cd Web-Preloaders/Curtain```
 Ensure you have the following file structure:
 
-```.```
-```├── index.html```
-```├── styles.css```
-```└── hero.jpg      <-- (Add your own hero image)```
+```.```\
+```├── index.html```\
+```├── styles.css```\
+```└── hero.jpg      <-- (Add your own hero image)```\
 
 Open the index.html file in your web browser. That's it!
 
